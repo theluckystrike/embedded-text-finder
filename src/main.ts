@@ -3,7 +3,7 @@ import { createGitHubSponsors } from './license/github-obsidian';
 import type { SponsorsManager } from './license/index';
 import { SPONSORS, bindPro, isPro, resetPro } from './pro';
 import { DocumentIndex, exportResults, search, type SearchOptions, type SearchResult } from './search';
-import { DEFAULT_SETTINGS, FinderSettingTab, normalizeSettings, type FinderSettings } from './settings';
+import { DEFAULT_SETTINGS, FinderSettingTab, normalizeSettings, rootAsEmpty, type FinderSettings } from './settings';
 import { vaultStore } from './store';
 import { FinderModal } from './modal';
 
@@ -56,7 +56,7 @@ export default class EmbeddedTextFinderPlugin extends Plugin {
 		if (!isPro()) { this.needsPro(); return false; }
 		if (!name.trim() || !query.trim()) return false;
 		this.settings.presets = this.settings.presets.filter((p) => p.name !== name.trim());
-		this.settings.presets.push({ name: name.trim(), folder: normalizePath(folder), query });
+		this.settings.presets.push({ name: name.trim(), folder: rootAsEmpty(normalizePath(folder)), query });
 		this.settings.presets = this.settings.presets.slice(-50);
 		await this.saveSettings(); return true;
 	}

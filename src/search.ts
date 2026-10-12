@@ -32,11 +32,14 @@ export function searchable(text: string): string {
 		if (mark) { fence = mark; return line.replace(/[^\r\n]/g, ' '); }
 		return line;
 	}).join('');
-	// A code span ends at a run of the same length, including across lines.
+	// A code span ends at a run of the same length, including across lines, but not across a blank line.
 	const ticks = [...blocks.matchAll(/`+/g)];
 	const nextTick = new Map<number, number>();
 	const byLength = new Map<number, number>();
+	let right = blocks.length;
 	for (const tick of ticks.reverse()) {
+		if (/\n[\t ]*\r?\n/.test(blocks.slice(tick.index, right))) byLength.clear();
+		right = tick.index;
 		const next = byLength.get(tick[0].length);
 		if (next !== undefined) nextTick.set(tick.index, next + tick[0].length);
 		byLength.set(tick[0].length, tick.index);
@@ -175,7 +178,7 @@ export class DocumentIndex {
 }
 
 function link(path: string): string { return `[[${path.replace(/\|/g, '\\|')}]]`; }
-function plainMarkdown(text: string): string { return text.replace(/\r?\n/g, ' ').replace(/[\\`*_{}[\]<>()#+.!|~^-]/g, '\\$&'); }
+function plainMarkdown(text: string): string { return text.replace(/\r?\n/g, ' ').replace(/[\\`*_{}[\]<>()#+.!|~^$=%&-]/g, '\\$&'); }
 export function exportResults(result: SearchResult, query: string): string {
 	return ['# Embedded text results', '', `Query: ${plainMarkdown(query)}`, '', ...result.matches.map((m) => `- Container ${link(m.container)} — Source ${link(m.source + m.subpath)}\n  ${plainMarkdown(m.excerpt)}`), '', result.cancelled ? 'Search cancelled. This list is partial.' : `Searched ${result.scanned} containing notes.`, `${result.diagnostics.length} source reports.`].join('\n');
 }

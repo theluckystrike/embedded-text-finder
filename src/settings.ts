@@ -6,13 +6,15 @@ import type EmbeddedTextFinderPlugin from './main';
 export interface Preset { name: string; folder: string; query: string }
 export interface FinderSettings { folder: string; query: string; useIndex: boolean; presets: Preset[] }
 export const DEFAULT_SETTINGS: FinderSettings = { folder: '', query: '', useIndex: false, presets: [] };
+/** normalizePath gives '/' for the vault root. The folder list uses ''. */
+export function rootAsEmpty(folder: string): string { return folder === '/' ? '' : folder; }
 export function normalizeSettings(data: unknown): FinderSettings {
 	const s = (data && typeof data === 'object' ? data : {}) as Partial<FinderSettings>;
 	return {
 		folder: typeof s.folder === 'string' ? s.folder : '',
 		query: typeof s.query === 'string' ? s.query : '',
 		useIndex: s.useIndex === true,
-		presets: Array.isArray(s.presets) ? s.presets.filter((p) => p && typeof p.name === 'string' && typeof p.folder === 'string' && typeof p.query === 'string').slice(0, 50) : [],
+		presets: Array.isArray(s.presets) ? s.presets.filter((p) => p && typeof p.name === 'string' && typeof p.folder === 'string' && typeof p.query === 'string').slice(0, 50).map((p) => ({ ...p, folder: rootAsEmpty(p.folder) })) : [],
 	};
 }
 export class FinderSettingTab extends PluginSettingTab {

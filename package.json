@@ -1,6 +1,6 @@
 {
 	"name": "embedded-text-finder",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"private": true,
 	"description": "Find containing notes by text in their Markdown embeds.",
 	"main": "main.js",
