@@ -10,7 +10,7 @@ export interface SearchStore {
 export interface Match { container: string; source: string; subpath: string; depth: number; excerpt: string }
 export interface Diagnostic { container: string; source: string; target: string; reason: string }
 export interface SearchResult { matches: Match[]; diagnostics: Diagnostic[]; scanned: number; cancelled: boolean }
-export interface SearchOptions { folder: string; query: string; cancelled?: () => boolean; progress?: (count: number) => void; yield?: () => Promise<void> }
+export interface SearchOptions { folder: string; query: string; note?: string; cancelled?: () => boolean; progress?: (count: number) => void; yield?: () => Promise<void> }
 
 /** Mask examples and front matter with spaces. Keep offsets for source ranges. */
 export function searchable(text: string): string {
@@ -90,7 +90,7 @@ export function inFolder(path: string, folder: string): boolean {
 	return !clean || path.startsWith(`${clean}/`);
 }
 
-/** Literal, case-sensitive search. Each source range has one result per container. */
+/** Literal, case-sensitive search. Each source range has one result per container. A note path replaces the folder. */
 export async function search(store: SearchStore, options: SearchOptions): Promise<SearchResult> {
 	const result: SearchResult = { matches: [], diagnostics: [], scanned: 0, cancelled: false };
 	if (!options.query.trim()) return result;
@@ -103,7 +103,7 @@ export async function search(store: SearchStore, options: SearchOptions): Promis
 	};
 	let steps = 0;
 	const pause = options.yield ?? (() => new Promise<void>((resolve) => window.setTimeout(resolve, 0)));
-	for (const container of store.paths().filter((p) => inFolder(p, options.folder)).sort()) {
+	for (const container of store.paths().filter((p) => options.note === undefined ? inFolder(p, options.folder) : p === options.note).sort()) {
 		const found = new Set<string>();
 		const seenDiagnostics = new Set<string>();
 		const report = (source: string, target: string, reason: string) => {
@@ -149,7 +149,8 @@ export async function search(store: SearchStore, options: SearchOptions): Promis
 		};
 		await visit(container, '', 0, new Set());
 		if (result.cancelled) break;
-		options.progress?.(++result.scanned);
+		result.scanned++;
+		options.progress?.(result.scanned);
 	}
 	return result;
 }

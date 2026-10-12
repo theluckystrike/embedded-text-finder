@@ -14,6 +14,12 @@ Choose a folder, enter literal text, and select Search. Subfolders are included.
 
 <img src="https://raw.githubusercontent.com/theluckystrike/embedded-text-finder/HEAD/docs/containing-notes.png" alt="Daily review results with containing paths and source excerpts" width="720">
 
+### Search one note and its embeds
+
+Run Embedded Text Finder: Find text in the active note and its embeds to search the note that you have open. The window selects "Only the active note and its embeds" and turns off the folder list. That note is the only container, so each result shows which embedded note holds the text. Use it for a monthly or master note that shows many embeds. The command is unavailable when no Markdown note is open.
+
+<img src="https://raw.githubusercontent.com/theluckystrike/embedded-text-finder/HEAD/docs/active-note.png" alt="Search results for one active note and its embeds" width="720">
+
 ### Search a heading embed
 
 An embed such as `![[Trail plan#Scope]]` restricts the source to that heading section. A matching phrase in another section does not make this embed a result. The section includes lower-level headings until the next heading at the same or a higher level. The source button retains the heading link. This version validates basic ATX headings that start with hash characters.
@@ -28,41 +34,41 @@ An embed such as `![[Witness#^ref]]` searches the referenced block. The block id
 
 ### Follow two embed levels
 
-A container can embed a relay note that embeds a final source. Text in the final source can return the container at depth two. Expansion stops at that point. A third embed level produces a depth-limit report. The depth label helps you see whether an excerpt came from the note body, its direct embed, or the second level. Repeated references to a matching source range share a result within the container.
+A container can embed a relay note that embeds a final source. Text in the final source can return the container at depth two. Expansion stops at that point. A third embed level produces a depth-limit report. The depth label shows the level of each excerpt. Repeated references to a matching source range share a result within the container.
 
 <img src="https://raw.githubusercontent.com/theluckystrike/embedded-text-finder/HEAD/docs/depth-two.png" alt="A nested review result from embed depth two" width="720">
 
 ### Read source reports
 
-Missing Markdown targets, skipped media, read failures, unresolved sections, cycles, and depth limits appear below the results. These reports explain gaps in the search. A PDF reference is skipped without fetching its content. Fenced examples and inline code do not expand into embeds. Front matter and comments are excluded. A search yields between batches; Cancel search stops further work and marks the returned list as partial.
+Missing Markdown targets, skipped media, read failures, unresolved sections, cycles, and depth limits appear below the results. A PDF reference is skipped without fetching its content. Fenced examples and inline code do not expand into embeds. Front matter and comments are excluded. A search yields between batches; Cancel search stops further work and marks the returned list as partial.
 
 <img src="https://raw.githubusercontent.com/theluckystrike/embedded-text-finder/HEAD/docs/source-reports.png" alt="Source reports for missing files, skipped media and expansion limits" width="720">
 
 ### Save presets and keep a local index (Pro)
 
-A preset stores a name, folder, and query. Save a preset for a repeated review, select it to restore the fields, then run Search. Saving an existing name replaces it. Remove preset deletes the selected preset. Up to 50 presets are retained. The optional incremental index keeps parsed source documents in memory. File changes invalidate those entries; a later search reads them again. Rename events clear the index. It builds on demand instead of running an automatic background search.
+A preset stores a name, folder, and query. Save a preset for a repeated review, select it to restore the fields, then run Search. Saving an existing name replaces it. Remove preset deletes the selected preset. Up to 50 presets are retained. The optional incremental index keeps parsed source documents in memory. File changes invalidate those entries; a later search reads them again. Rename events clear the index.
 
 <img src="https://raw.githubusercontent.com/theluckystrike/embedded-text-finder/HEAD/docs/presets-index.png" alt="Pro preset controls and local index with sample results" width="720">
 
 ### Export linked results (Pro)
 
-Export results creates a Markdown note at the vault root. It includes links to the containing notes and their sources, including heading or block suffixes. It writes a new numbered file when the base export name already exists. The exported list uses the completed search data. A cancelled search exports its partial-result label. Export does not alter the source notes. The screenshot uses a local sponsorship fixture for demonstration.
+Export results creates a Markdown note at the vault root. It includes links to the containing notes and their sources, including heading or block suffixes. It writes a new numbered file when the base export name already exists. A cancelled search exports its partial-result label. Export does not alter the source notes. The screenshot uses a local sponsorship fixture for demonstration.
 
 <img src="https://raw.githubusercontent.com/theluckystrike/embedded-text-finder/HEAD/docs/result-export.png" alt="A Markdown export with container links and source links" width="720">
 
 ## Install
 
-This product needs Obsidian 1.13.4 or later. For a manual installation, copy `main.js`, `manifest.json`, and `styles.css` from the release into `.obsidian/plugins/embedded-text-finder/` in your vault. Reload Obsidian and enable Embedded Text Finder in Community plugins. The publisher controls releases and listing availability. Keep a vault backup before testing a new plugin. The source uses the MIT license.
+This product needs Obsidian 1.13.4 or later. For a manual installation, copy `main.js`, `manifest.json`, and `styles.css` from the release into `.obsidian/plugins/embedded-text-finder/` in your vault. Reload Obsidian and enable Embedded Text Finder in Community plugins. Keep a vault backup before testing a new plugin. The source uses the MIT license.
 
 ## Usage
 
 Open the command palette and run Embedded Text Finder: Find text in notes and embeds. Select the containing folder from the list and type the phrase as it appears in the source. Select Search or press Enter in the text field. The plugin remembers the last folder and query in its local settings data.
 
-Select Container to open the containing note or Source to open the matching source. Opening a path closes the search window. Run the command again to search another phrase. For a long result list, Show next 100 matches adds the next page. The status counts matches, completed containers, and source reports. The report panel shows its first 100 entries.
+Select Container to open the containing note or Source to open the matching source. Opening a path closes the search window. Run the command again to search another phrase. In the general search window, select Only the active note and its embeds to use the open note as the only container. The window does not save that choice. For a long result list, Show next 100 matches adds the next page. The status counts matches, completed containers, and source reports. The report panel shows its first 100 entries.
 
 ## Settings
 
-The search window holds the folder, query, preset, and index controls. Vault root includes the vault's Markdown notes. Selecting a folder includes its descendants. Use a smaller folder when you need a narrower list. The search reads current source content when the index is off. With the index enabled, unchanged documents can be reused between searches.
+The search window holds the folder, query, preset, and index controls. Vault root includes the vault's Markdown notes. Selecting a folder includes its descendants. The search reads current source content when the index is off. With the index enabled, unchanged documents can be reused between searches.
 
 The plugin settings tab describes search scope and provides GitHub Sponsors controls. Sign out turns Pro off and clears the memory index. Free searches remain available. Disable the index in the search window to clear it while keeping Pro enabled. Closing Obsidian also removes the memory index. Presets and the last search fields are stored in the plugin's `data.json` file.
 

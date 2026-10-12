@@ -58,6 +58,22 @@ describe('Embedded text finder',()=>{
   await browser.$('.etf-source').click();
   await browser.waitUntil(async()=>browser.executeObsidian(({app})=>app.workspace.getActiveFile()?.path.endsWith('/Witness.md')??false),{timeout:10000});
  });
+ it('searches only the active note from the active note command',async()=>{
+  await browser.executeObsidian(async({app},id)=>{
+   const p=(app as unknown as PluginHost).plugins.plugins[id]!;for(const m of [...p.modals])m.close();
+   const daily=app.vault.getMarkdownFiles().find(f=>f.path.endsWith('/Review/Daily review.md'))!;
+   await app.workspace.getLeaf(false).openFile(daily);
+   (app as unknown as {commands:{executeCommandById(id:string):boolean}}).commands.executeCommandById(id+':search-active');
+  },pluginId);
+  await browser.$('.etf-active').waitForDisplayed();
+  const rendered=await browser.executeObsidian(async({app},id)=>{
+   const p=(app as unknown as PluginHost).plugins.plugins[id]!;const m=[...p.modals][0]!;
+   const state={checked:m.activeOnly.checked,folderOff:m.folder.disabled};
+   m.query.value='blue bird';const result=await m.run();m.close();
+   return {...state,containers:[...new Set(result?.matches.map(x=>x.container))]};
+  },pluginId);
+  expect(rendered).toEqual({checked:true,folderOff:true,containers:['Embedded Text Finder/Review/Daily review.md']});
+ });
  it('reads changed source text on the next on-demand search',async()=>{
   const source='Embedded Text Finder/Sources/Changed source.md';const container='Embedded Text Finder/Review/Changed review.md';
   await browser.executeObsidian(async({app},source,container)=>{await app.vault.create(source,'initial phrase');await app.vault.create(container,'![[Embedded Text Finder/Sources/Changed source]]');},source,container);

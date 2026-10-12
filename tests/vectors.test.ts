@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import vectors from './vectors/embedded-text-finder.json';
 import { parseDocument, search, type SearchStore } from '../src/search';
 
-interface Fixture { notes: Record<string, string>; folder: string; query: string; regions?: Record<string, number[]>; updates?: Record<string, string> }
+interface Fixture { notes: Record<string, string>; folder: string; query: string; note?: string; regions?: Record<string, number[]>; updates?: Record<string, string> }
 function store(fixture: Fixture): SearchStore {
  return {
   paths: () => Object.keys(fixture.notes),

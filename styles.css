@@ -20,6 +20,21 @@
 	margin-top: 8px;
 	}
 
+.embedded-text-finder .etf-fields .etf-active-label {
+	grid-column: 1 / -1;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	overflow-wrap: anywhere;
+	}
+
+.embedded-text-finder .etf-fields .etf-active {
+	width: var(--checkbox-size);
+	height: var(--checkbox-size);
+	flex: none;
+	margin-top: 0;
+	}
+
 .embedded-text-finder .etf-actions {
 	display: flex;
 	flex-wrap: wrap;

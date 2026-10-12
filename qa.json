@@ -7,6 +7,13 @@
     "wait": 300
   },
   {
+    "feature": "active-note",
+    "caption": "Search only the open note and read which embedded note holds the text.",
+    "note": "Review/Daily review.md",
+    "eval": "(async()=>{const p=app.plugins.plugins['embedded-text-finder']; for(const m of [...p.modals]) m.close(); p.pro.signOut(); const m=p.openSearch(true); m.query.value=\"blue bird\"; await m.run(); return 'ok';})()",
+    "wait": 300
+  },
+  {
     "feature": "heading-source",
     "caption": "Find the review from the Scope heading and its source excerpt.",
     "note": "Review/Daily review.md",

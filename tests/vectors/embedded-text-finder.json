@@ -680,6 +680,128 @@
     ],
     "reports": []
    }
+  },
+  {
+   "name": "Single note scope returns only that container",
+   "args": [
+    {
+     "notes": {
+      "Parents/A.md": "![[S]]",
+      "Parents/B.md": "![[S]]",
+      "S.md": "blue bird"
+     },
+     "folder": "",
+     "query": "blue bird",
+     "note": "Parents/A.md"
+    }
+   ],
+   "expected": {
+    "matches": [
+     [
+      "Parents/A.md",
+      "S.md",
+      "",
+      1
+     ]
+    ],
+    "reports": []
+   }
+  },
+  {
+   "name": "Single note scope replaces the folder",
+   "args": [
+    {
+     "notes": {
+      "Parents/A.md": "blue bird",
+      "Other/C.md": "blue bird"
+     },
+     "folder": "Other",
+     "query": "blue bird",
+     "note": "Parents/A.md"
+    }
+   ],
+   "expected": {
+    "matches": [
+     [
+      "Parents/A.md",
+      "Parents/A.md",
+      "",
+      0
+     ]
+    ],
+    "reports": []
+   }
+  },
+  {
+   "name": "Single note scope reports gaps of that note only",
+   "args": [
+    {
+     "notes": {
+      "Parents/A.md": "![[Missing]]\n![[S]]",
+      "Parents/B.md": "![[Gone]]",
+      "S.md": "blue bird"
+     },
+     "folder": "",
+     "query": "blue bird",
+     "note": "Parents/A.md"
+    }
+   ],
+   "expected": {
+    "matches": [
+     [
+      "Parents/A.md",
+      "S.md",
+      "",
+      1
+     ]
+    ],
+    "reports": [
+     "Missing Markdown target"
+    ]
+   }
+  },
+  {
+   "name": "Single note scope follows two embed levels",
+   "args": [
+    {
+     "notes": {
+      "Parents/A.md": "![[R]]",
+      "R.md": "![[S]]",
+      "S.md": "blue bird"
+     },
+     "folder": "",
+     "query": "blue bird",
+     "note": "Parents/A.md"
+    }
+   ],
+   "expected": {
+    "matches": [
+     [
+      "Parents/A.md",
+      "S.md",
+      "",
+      2
+     ]
+    ],
+    "reports": []
+   }
+  },
+  {
+   "name": "Unknown note path gives no result",
+   "args": [
+    {
+     "notes": {
+      "Parents/A.md": "blue bird"
+     },
+     "folder": "",
+     "query": "blue bird",
+     "note": "Parents/Z.md"
+    }
+   ],
+   "expected": {
+    "matches": [],
+    "reports": []
+   }
   }
  ]
 }

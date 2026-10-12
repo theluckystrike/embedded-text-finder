@@ -27,6 +27,12 @@ export default class EmbeddedTextFinderPlugin extends Plugin {
 			for (const modal of this.modals) modal.updatePro();
 		}));
 		this.addCommand({ id: 'search', name: 'Find text in notes and embeds', callback: () => { this.openSearch(); } });
+		this.addCommand({ id: 'search-active', name: 'Find text in the active note and its embeds', checkCallback: (checking) => {
+			const file = this.app.workspace.getActiveFile();
+			if (!file || file.extension !== 'md') return false;
+			if (!checking) this.openSearch(true);
+			return true;
+		} });
 		this.registerEvent(this.app.vault.on('modify', (file) => this.index.invalidate(file.path)));
 		this.registerEvent(this.app.vault.on('delete', (file) => this.index.invalidate(file.path)));
 		this.registerEvent(this.app.vault.on('rename', () => this.index.clear()));
@@ -41,7 +47,7 @@ export default class EmbeddedTextFinderPlugin extends Plugin {
 		for (const modal of [...this.modals]) modal.close();
 		this.index.clear(); resetPro();
 	}
-	openSearch(): FinderModal { const modal = new FinderModal(this); modal.open(); return modal; }
+	openSearch(activeOnly = false): FinderModal { const modal = new FinderModal(this, activeOnly); modal.open(); return modal; }
 	async saveSettings(): Promise<void> { await this.saveData(this.settings); }
 	async runSearch(options: SearchOptions): Promise<SearchResult> {
 		return search(vaultStore(this.app, this.app.vault.getMarkdownFiles(), this.index, () => isPro() && this.settings.useIndex), { ...options, folder: normalizePath(options.folder) });

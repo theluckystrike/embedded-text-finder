@@ -1,4 +1,4 @@
-import { Modal, Notice } from 'obsidian';
+import { Modal, Notice, type TFile } from 'obsidian';
 import type EmbeddedTextFinderPlugin from './main';
 import { isPro } from './pro';
 import type { SearchResult } from './search';
@@ -10,6 +10,7 @@ export class FinderModal extends Modal {
 	results!: HTMLElement;
 	presets!: HTMLSelectElement;
 	indexToggle!: HTMLInputElement;
+	activeOnly!: HTMLInputElement;
 	private searchButton!: HTMLButtonElement;
 	private cancelButton!: HTMLButtonElement;
 	private exportButton!: HTMLButtonElement;
@@ -17,7 +18,9 @@ export class FinderModal extends Modal {
 	private controller: AbortController | null = null;
 	private last: SearchResult | null = null;
 	private lastQuery = '';
-	constructor(readonly finder: EmbeddedTextFinderPlugin) { super(finder.app); }
+	/** A file reference, so a rename while the window is open keeps the scope. */
+	private activeNote: TFile | null = null;
+	constructor(readonly finder: EmbeddedTextFinderPlugin, private readonly startActive = false) { super(finder.app); }
 	onOpen(): void {
 		this.finder.modals.add(this);
 		this.setTitle('Embedded text finder');
@@ -40,6 +43,14 @@ export class FinderModal extends Modal {
 		const queryLabel = fields.createEl('label', { text: 'Literal text (case-sensitive)' });
 		this.query = queryLabel.createEl('input', { type: 'text', cls: 'etf-query', value: this.finder.settings.query, placeholder: 'For example, blue bird' });
 		this.query.addEventListener('keydown', (event) => { if (event.key === 'Enter') void this.run(); });
+		const active = this.app.workspace.getActiveFile();
+		this.activeNote = active && active.extension === 'md' ? active : null;
+		const activeLabel = fields.createEl('label', { cls: 'etf-active-label' });
+		this.activeOnly = activeLabel.createEl('input', { type: 'checkbox', cls: 'etf-active' });
+		activeLabel.appendText(this.activeNote ? ` Only the active note and its embeds (${this.activeNote.path})` : ' Only the active note and its embeds (open a Markdown note first)');
+		this.activeOnly.checked = this.startActive && this.activeNote !== null;
+		this.activeOnly.disabled = this.activeNote === null;
+		this.activeOnly.addEventListener('change', () => { this.syncScope(); if (!this.last && !this.controller) this.status.setText(this.readyText()); });
 		const actions = el.createDiv({ cls: 'etf-actions' });
 		this.searchButton = actions.createEl('button', { text: 'Search', cls: 'mod-cta etf-search' });
 		this.searchButton.addEventListener('click', () => void this.run());
@@ -66,11 +77,15 @@ export class FinderModal extends Modal {
 		save.addEventListener('click', () => { void this.finder.savePreset(this.presetName.value, this.folder.value, this.query.value).then(() => this.updatePro()); });
 		const remove = pro.createEl('button', { text: 'Remove preset' });
 		remove.addEventListener('click', () => { void this.finder.removePreset(this.presets.value).then(() => this.updatePro()); });
-		this.status = el.createEl('p', { text: 'Ready. Choose a folder and enter text.', cls: 'etf-status', attr: { role: 'status', 'aria-live': 'polite' } });
+		this.status = el.createEl('p', { text: this.readyText(), cls: 'etf-status', attr: { role: 'status', 'aria-live': 'polite' } });
 		this.results = el.createDiv({ cls: 'etf-results' });
+		this.syncScope();
 		this.updatePro();
 		this.query.focus();
 	}
+	/** The folder list does not apply when a single note is the container. */
+	private syncScope(): void { this.folder.disabled = this.activeOnly.checked; }
+	private readyText(): string { return this.activeOnly.checked ? 'Ready. Enter text to search the active note.' : 'Ready. Choose a folder and enter text.'; }
 	updatePro(): void {
 		if (!this.presets) return;
 		this.presets.empty();
@@ -89,12 +104,12 @@ export class FinderModal extends Modal {
 		this.last = null;
 		this.results.empty(); this.status.setText('Searching…');
 		this.searchButton.disabled = true; this.cancelButton.disabled = false;
-		this.folder.disabled = true; this.query.disabled = true; this.updatePro();
+		this.folder.disabled = true; this.activeOnly.disabled = true; this.query.disabled = true; this.updatePro();
 		try {
 			const folder = this.folder.value;
 			this.finder.settings.folder = folder; this.finder.settings.query = query;
 			await this.finder.saveSettings();
-			const result = await this.finder.runSearch({ folder, query, cancelled: () => controller.signal.aborted, progress: (count) => this.status.setText(`Searching… ${count} containing notes checked.`) });
+			const result = await this.finder.runSearch({ folder, query, note: this.activeOnly.checked && this.activeNote ? this.activeNote.path : undefined, cancelled: () => controller.signal.aborted, progress: (count) => this.status.setText(`Searching… ${count} containing notes checked.`) });
 			if (!this.finder.modals.has(this)) return null;
 			this.last = result; this.lastQuery = query;
 			this.render(result);
@@ -105,7 +120,7 @@ export class FinderModal extends Modal {
 		} finally {
 			this.controller = null;
 			this.searchButton.disabled = false; this.cancelButton.disabled = true;
-			this.folder.disabled = false; this.query.disabled = false; this.updatePro();
+			this.activeOnly.disabled = this.activeNote === null; this.syncScope(); this.query.disabled = false; this.updatePro();
 		}
 	}
 	private render(result: SearchResult): void {
