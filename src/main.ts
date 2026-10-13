@@ -17,7 +17,7 @@ export default class EmbeddedTextFinderPlugin extends Plugin {
 		this.active = true;
 		this.settings = normalizeSettings(await this.loadData());
 		if (!this.active) return;
-		const pro = createGitHubSponsors(this.app, this.manifest.id, SPONSORS);
+		const pro = createGitHubSponsors(this.app, this.manifest.id, SPONSORS, this);
 		pro.init(); this.pro = pro; bindPro(pro);
 		const tab = new FinderSettingTab(this.app, this);
 		this.addSettingTab(tab);
