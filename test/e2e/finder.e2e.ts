@@ -61,8 +61,19 @@ describe('Embedded text finder',()=>{
  it('searches only the active note from the active note command',async()=>{
   await browser.executeObsidian(async({app},id)=>{
    const p=(app as unknown as PluginHost).plugins.plugins[id]!;for(const m of [...p.modals])m.close();
-   const daily=app.vault.getMarkdownFiles().find(f=>f.path.endsWith('/Review/Daily review.md'))!;
-   await app.workspace.getLeaf(false).openFile(daily);
+  },pluginId);
+  // The source click of the test before opens Witness without an await. Wait until Daily review stays active.
+  let stable=0;
+  await browser.waitUntil(async()=>{
+   const ok=await browser.executeObsidian(async({app})=>{
+    const daily=app.vault.getMarkdownFiles().find(f=>f.path.endsWith('/Review/Daily review.md'))!;
+    if(app.workspace.getActiveFile()?.path===daily.path)return true;
+    const leaf=app.workspace.getLeaf(false);await leaf.openFile(daily);app.workspace.setActiveLeaf(leaf,{focus:true});
+    return false;
+   });
+   stable=ok?stable+1:0;return stable>=2;
+  },{timeout:15000,interval:300,timeoutMsg:'Daily review did not stay active'});
+  await browser.executeObsidian(({app},id)=>{
    (app as unknown as {commands:{executeCommandById(id:string):boolean}}).commands.executeCommandById(id+':search-active');
   },pluginId);
   await browser.$('.etf-active').waitForDisplayed();

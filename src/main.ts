@@ -6,6 +6,8 @@ import { DocumentIndex, exportResults, search, type SearchOptions, type SearchRe
 import { DEFAULT_SETTINGS, FinderSettingTab, normalizeSettings, rootAsEmpty, type FinderSettings } from './settings';
 import { vaultStore } from './store';
 import { FinderModal } from './modal';
+import { setupHello } from './hello/index';
+import WHATS_NEW from './whats-new.json';
 
 export default class EmbeddedTextFinderPlugin extends Plugin {
 	settings: FinderSettings = { ...DEFAULT_SETTINGS, presets: [] };
@@ -14,6 +16,8 @@ export default class EmbeddedTextFinderPlugin extends Plugin {
 	readonly modals = new Set<FinderModal>();
 	private active = false;
 	async onload(): Promise<void> {
+		// First: "What's new" reads its state before the settings load (packages/hello). It does not wait.
+		setupHello(this, WHATS_NEW);
 		this.active = true;
 		this.settings = normalizeSettings(await this.loadData());
 		if (!this.active) return;

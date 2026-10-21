@@ -2,6 +2,7 @@ import { PluginSettingTab, type SettingDefinitionItem } from 'obsidian';
 import { sponsorsSettingItems } from './license/github-obsidian';
 import { PRO_UI } from './pro';
 import type EmbeddedTextFinderPlugin from './main';
+import { helloSettingItems } from './hello/settings';
 
 export interface Preset { name: string; folder: string; query: string }
 export interface FinderSettings { folder: string; query: string; useIndex: boolean; presets: Preset[] }
@@ -20,6 +21,11 @@ export function normalizeSettings(data: unknown): FinderSettings {
 export class FinderSettingTab extends PluginSettingTab {
 	constructor(app: ConstructorParameters<typeof PluginSettingTab>[0], private finder: EmbeddedTextFinderPlugin) { super(app, finder); }
 	getSettingDefinitions(): SettingDefinitionItem[] {
+		// The product rows, then the "More from NoteMods" card (packages/hello).
+		return [...this.productSettingDefinitions(), ...helloSettingItems()];
+	}
+
+	productSettingDefinitions(): SettingDefinitionItem[] {
 		return [
 			{ name: 'Search scope', desc: 'Choose a folder and a literal, case-sensitive query in the search window. The search includes subfolders and follows Markdown embeds to depth two.' },
 			{ name: 'Local index', desc: 'Enable the Pro index in the search window. It keeps source text in memory and invalidates changed files. Closing Obsidian clears the index.' },

@@ -64,13 +64,15 @@ This product needs Obsidian 1.13.4 or later. For a manual installation, copy `ma
 
 Open the command palette and run Embedded Text Finder: Find text in notes and embeds. Select the containing folder from the list and type the phrase as it appears in the source. Select Search or press Enter in the text field. The plugin remembers the last folder and query in its local settings data.
 
-Select Container to open the containing note or Source to open the matching source. Opening a path closes the search window. Run the command again to search another phrase. In the general search window, select Only the active note and its embeds to use the open note as the only container. The window does not save that choice. For a long result list, Show next 100 matches adds the next page. The status counts matches, completed containers, and source reports. The report panel shows its first 100 entries.
+Select Container to open the containing note or Source to open the matching source. Opening a path closes the search window. Run the command again to search another phrase. The window does not save the "Only the active note and its embeds" choice. For a long result list, Show next 100 matches adds the next page. The status counts matches, completed containers, and source reports. The report panel shows its first 100 entries.
 
 ## Settings
 
-The search window holds the folder, query, preset, and index controls. Vault root includes the vault's Markdown notes. Selecting a folder includes its descendants. The search reads current source content when the index is off. With the index enabled, unchanged documents can be reused between searches.
+After a minor or major update, this plugin opens one What's new tab in the background. The tab and settings card suggest other NoteMods plugins and Zovo Chat and link to notemods.com for feedback ([privacy](https://notemods.com/privacy/)). The tab sends no data. Turn the tab off in Settings.
 
-The plugin settings tab describes search scope and provides GitHub Sponsors controls. Sign out turns Pro off and clears the memory index. Free searches remain available. Disable the index in the search window to clear it while keeping Pro enabled. Closing Obsidian also removes the memory index. Presets and the last search fields are stored in the plugin's `data.json` file.
+The search window holds the folder, query, preset, and index controls. Vault root includes the vault's Markdown notes.
+
+The plugin settings tab describes search scope and provides GitHub Sponsors controls. Sign out clears the memory index. Free searches remain available. Disable the index in the search window to clear it while keeping Pro enabled. Closing Obsidian also removes the memory index. Presets and the last search fields are stored in the plugin's `data.json` file.
 
 ## FAQ
 
