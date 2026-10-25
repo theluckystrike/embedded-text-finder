@@ -1,5 +1,6 @@
 {
 	"name": "embedded-text-finder",
+	"repository": {"type": "git", "url": "theluckystrike/embedded-text-finder.git"},
 	"version": "1.2.0",
 	"private": true,
 	"description": "Find containing notes by text in their Markdown embeds.",
