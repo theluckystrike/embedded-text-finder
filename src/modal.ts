@@ -89,7 +89,7 @@ export class FinderModal extends Modal {
 	updatePro(): void {
 		if (!this.presets) return;
 		this.presets.empty();
-		this.presets.createEl('option', { text: isPro() ? 'Choose a saved search' : 'Sign in from settings to use Pro', value: '' });
+		this.presets.createEl('option', { text: isPro() ? 'Choose a saved search' : 'Saved searches need Pro', value: '' });
 		if (isPro()) for (const preset of this.finder.settings.presets) this.presets.createEl('option', { text: preset.name, value: preset.name });
 		this.presets.disabled = !isPro();
 		this.indexToggle.checked = isPro() && this.finder.settings.useIndex;

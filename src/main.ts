@@ -1,7 +1,7 @@
 import { Notice, Plugin, normalizePath, type TFile } from 'obsidian';
 import { createGitHubSponsors } from './license/github-obsidian';
 import type { SponsorsManager } from './license/index';
-import { SPONSORS, bindPro, isPro, resetPro } from './pro';
+import { SPONSORS, bindPro, isPro, resetPro, proNotice } from './pro';
 import { DocumentIndex, exportResults, search, type SearchOptions, type SearchResult } from './search';
 import { DEFAULT_SETTINGS, FinderSettingTab, normalizeSettings, rootAsEmpty, type FinderSettings } from './settings';
 import { vaultStore } from './store';
@@ -83,5 +83,5 @@ export default class EmbeddedTextFinderPlugin extends Plugin {
 		const file = await this.app.vault.create(normalizePath(path), exportResults(result, query));
 		new Notice(`Saved ${file.path}`); return file;
 	}
-	needsPro(): void { new Notice('This is a pro feature. Sponsor on GitHub, then sign in from the plugin settings.'); }
+	needsPro(): void { proNotice('This is a pro feature.'); }
 }
