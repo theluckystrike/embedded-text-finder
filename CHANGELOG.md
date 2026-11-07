@@ -1,5 +1,11 @@
 # embedded-text-finder
 
+## 1.2.2
+
+### Patch Changes
+
+- ae29d99: The Pro notice of Embedded Text Finder now says that one payment turns on Pro in every NoteMods plugin.
+
 ## 1.2.1
 
 ### Patch Changes
